@@ -10,6 +10,7 @@ metrics = [
 
 '''
 args: 
+- schema (merlin.schema.Schema)
 - seq_length (int)
 - embedding_dims (dict: feature name -> dim, e.g. {'item-list': 64})
 - masking (str, e.g. 'clm', 'mlm')
