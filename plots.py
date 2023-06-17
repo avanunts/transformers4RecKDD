@@ -14,7 +14,7 @@ def plot_eval_results(trainer, metric_name, **kwargs):
     if metric_name == 'recall':
         for at_k in kwargs['at_k']:
             recall = list(map(lambda x: recall_at_k(x, at_k), eval_log_history))
-            plt.plot(epochs, recall, label='mrr@{}'.format(at_k))
+            plt.plot(epochs, recall, label='recall@{}'.format(at_k))
 
     if metric_name == 'loss':
         loss_y = list(map(lambda x: loss(x), eval_log_history))
