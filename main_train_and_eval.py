@@ -1,6 +1,6 @@
 from merlin.io import Dataset
-from .t4rec_models import xl_net_model
-from .t4rec_trainers import CustomTrainingArguments
+import t4rec_models
+import t4rec_trainers
 from transformers4rec.torch import Trainer
 
 
@@ -18,8 +18,8 @@ returns trainer object, in which model, train, test and eval results might be fo
 def train_and_eval_xlnet(nvt_paths, xlnet_args, custom_training_non_fixed_args):
     train = Dataset(nvt_paths['train'], engine='parquet')
     test = Dataset(nvt_paths['test'], engine='parquet')
-    model = xl_net_model(xlnet_args)
-    training_args = CustomTrainingArguments(custom_training_non_fixed_args)
+    model = t4rec_models.xl_net_model(xlnet_args)
+    training_args = t4rec_trainers.CustomTrainingArguments(custom_training_non_fixed_args)
     trainer = Trainer(
         model=model,
         args=training_args,
