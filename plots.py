@@ -39,4 +39,4 @@ def recall_at_k(entry, k):
 
 
 def loss(entry):
-    return entry['eval_/next-item/loss']
+    return entry['eval_/loss']
