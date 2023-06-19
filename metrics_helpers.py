@@ -24,14 +24,17 @@ def save_metrics(trainer, model_name, results_file_path):
     if not os.path.exists(results_file_path):
         init_results_file(results_file_path)
     if model_found_in_results(model_name, results_file_path):
-        print(
-            'Results for model {} already exists in results table, please, delete entry manually and procede, or leave it as is'.format(
-                model_name))
+        print('Results for model {} already exists in results table, please, delete entry manually and proceed,'
+              ' or leave it as is'.format(model_name))
         return
-    results_entry = get_metrics(trainer)
-    results_entry['model_name'] = model_name
-    pd.DataFrame([results_entry], columns=RESULTS_COLUMNS).to_csv(results_file_path, mode='a', index=False,
-                                                                  header=False)
+    metrics = get_metrics(trainer)
+    do_save_metrics(metrics, model_name, results_file_path)
+
+
+def do_save_metrics(metrics, model_name, results_file_path):
+    metrics['model_name'] = model_name
+    pd.DataFrame([metrics], columns=RESULTS_COLUMNS).to_csv(results_file_path, mode='a', index=False,
+                                                            header=False)
 
 
 def get_metrics(trainer):
