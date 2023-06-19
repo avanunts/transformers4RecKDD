@@ -34,11 +34,10 @@ def save_metrics(trainer, model_name, results_file_path):
 
 
 def get_metrics(trainer):
-    return get_metrics_from_state(trainer.state)
+    return get_metrics_from_log_history(trainer.state.log_history)
 
 
-def get_metrics_from_state(trainer_state):
-    log_history = trainer_state.log_history
+def get_metrics_from_log_history(log_history):
     return dict(map(
         lambda item: (item[0], item[1](log_history)),
         RESULTS_KV.items()
