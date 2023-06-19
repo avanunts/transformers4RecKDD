@@ -1,11 +1,10 @@
+import os
 import json
 
 from merlin.io import Dataset
 import t4rec_models
 import t4rec_trainers
 from transformers4rec.torch import Trainer
-
-
 
 '''
 args:
@@ -70,3 +69,13 @@ def build_params_json(nvt_paths, model_type, model_args, ta_cls_name, ta_cls_ini
     }
     params_json = json.dumps(params, indent=4)
     return params_json
+
+
+def save_params(params_folder, model_name, params_json):
+    with open(os.path.join(params_folder, model_name, 'params.json'), "w") as outfile:
+        outfile.write(params_json)
+
+
+def load_params(params_folder, model_name):
+    with open(os.path.join(params_folder, model_name, 'params.json'), "r") as infile:
+        return json.load(infile)
