@@ -9,8 +9,7 @@ metrics = [
 ]
 
 '''
-args: 
-- schema (merlin.schema.Schema)
+args: (dict)
 - seq_length (int)
 - embedding_dims (dict: feature name -> dim, e.g. {'item-list': 64})
 - masking (str, e.g. 'clm', 'mlm')
@@ -18,12 +17,13 @@ args:
 - xlnet_n_head (int)
 - xlnet_n_layer (int)
 - weight_tying (boolean)
+schema: (merlin.schema.Schema)
 '''
 
 
-def xl_net_model(args):
+def xl_net_model(args, schema):
     inputs = TabularSequenceFeatures.from_schema(
-        args['schema'],
+        schema,
         aggregation='concat',
         max_sequence_length=args['seq_length'],
         embedding_dims=args['embedding_dims'],
