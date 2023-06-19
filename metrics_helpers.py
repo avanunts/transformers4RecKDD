@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 import log_history_helpers
@@ -18,6 +20,13 @@ RESULTS_COLUMNS = ['model_name'] + list(RESULTS_KV.keys())
 
 
 def save_metrics(trainer, model_name, results_file_path):
+    if not os.path.exists(results_file_path):
+        init_results_file(results_file_path)
+    if model_found_in_results(model_name, results_file_path):
+        print(
+            'Results for model {} already exists in results table, please, delete entry manually and procede, or leave it as is'.format(
+                model_name))
+        return
     results_entry = get_metrics(trainer)
     results_entry['model_name'] = model_name
     pd.DataFrame([results_entry], columns=RESULTS_COLUMNS).to_csv(results_file_path, mode='a', index=False,
@@ -34,3 +43,7 @@ def get_metrics(trainer):
 
 def init_results_file(results_file_path):
     pd.DataFrame([], columns=RESULTS_COLUMNS).to_csv(results_file_path, index=False, header=True)
+
+
+def model_found_in_results(model_name, results_file_path):
+    return (pd.read_csv(results_file_path).model_name == model_name).sum() > 0
