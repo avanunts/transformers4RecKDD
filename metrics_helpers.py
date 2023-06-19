@@ -1,4 +1,5 @@
 import os
+import json
 
 import pandas as pd
 
@@ -35,6 +36,13 @@ def save_metrics(trainer, model_name, results_file_path):
 
 def get_metrics(trainer):
     return get_metrics_from_log_history(trainer.state.log_history)
+
+
+def get_metrics_from_checkpoint(checkpoint_path):
+    state = None
+    with open(os.path.join(checkpoint_path, 'trainer_state.json'), 'r') as open_file:
+        state = json.load(open_file)
+    return get_metrics_from_log_history(state['log_history'])
 
 
 def get_metrics_from_log_history(log_history):
