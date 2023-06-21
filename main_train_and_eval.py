@@ -3,8 +3,8 @@ import json
 
 from merlin.io import Dataset
 import t4rec_models
+import t4rec_trainer_args
 import t4rec_trainers
-from transformers4rec.torch import Trainer
 
 '''
 args:
@@ -21,7 +21,7 @@ MODEL_CONSTRUCTORS = {
 }
 
 TRAINING_ARGS_CONSTRUCTORS = {
-    'custom_v1': t4rec_trainers.CustomTrainingArguments
+    'custom_v1': t4rec_trainer_args.CustomTrainingArguments
 }
 
 
@@ -30,7 +30,7 @@ def train_and_eval_xlnet(nvt_paths, model_type, model_args, ta_type, ta_args, re
     test = Dataset(nvt_paths['test'], engine='parquet')
     model = init_model(model_type, model_args, train.schema)
     training_args = init_training_args(ta_type, ta_args)
-    trainer = Trainer(
+    trainer = t4rec_trainers.CustomTrainer(
         model=model,
         args=training_args,
         schema=train.schema,
