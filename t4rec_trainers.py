@@ -30,7 +30,8 @@ defaults = {
     'num_cycles': 1.5,
     'max_seq_length': 20,
     'logging_steps': 1000,
-    'eval_steps': 5000
+    'eval_steps': 5000,
+    'warmup_steps': None,
 }
 
 
@@ -64,3 +65,5 @@ class CustomTrainingArguments(T4RecTrainingArguments):
             evaluation_strategy=EVAL_STRATEGY,
             eval_steps=self.get_argument('eval_steps'),
         )
+        if self.get_argument('warmup_steps') is not None:
+            self.warmup_steps = self.get_argument('warmup_steps')
