@@ -1,7 +1,11 @@
 from transformers4rec import torch as tr
 
+from torch.nn import CrossEntropyLoss
+
 from transformers4rec.torch.features.sequence import TabularSequenceFeatures
 from transformers4rec.torch.ranking_metric import MeanReciprocalRankAt, RecallAt
+
+import losses
 
 metrics = [
     MeanReciprocalRankAt(top_ks=[20, 40], labels_onehot=True),
@@ -17,6 +21,7 @@ args: (dict)
 - xlnet_n_head (int)
 - xlnet_n_layer (int)
 - weight_tying (boolean)
+- loss (str): one of 'XE', 'bpr-max', default 'XE'
 schema: (merlin.schema.Schema)
 '''
 
@@ -46,9 +51,10 @@ def xl_net_model(args, schema):
     )
 
     # Define a head related to next item prediction task
+    loss = CrossEntropyLoss() if args['loss'] is None or args['loss'] == 'XE' else losses.BPRMaxLoss()
     head = tr.Head(
         body,
-        tr.NextItemPredictionTask(weight_tying=args['weight_tying'], metrics=metrics),
+        tr.NextItemPredictionTask(loss=loss, weight_tying=args['weight_tying'], metrics=metrics),
         inputs=inputs,
     )
 
