@@ -3,11 +3,12 @@ import log_history_helpers
 
 
 def plot_eval_results(trainer, metric_name, **kwargs):
-    eval_log_history = log_history_helpers.get_eval_entries(trainer.state.log_history)
-    plot_eval_results_from_log_history(eval_log_history, metric_name, **kwargs)
+    log_history = trainer.state.log_history
+    plot_eval_results_from_log_history(log_history, metric_name, **kwargs)
 
 
-def plot_eval_results_from_log_history(eval_log_history, metric_name, **kwargs):
+def plot_eval_results_from_log_history(log_history, metric_name, **kwargs):
+    eval_log_history = log_history_helpers.get_eval_entries(log_history)
     epochs = list(map(lambda x: x['epoch'], eval_log_history))
     plt.figure(figsize=(16, 9))
 
