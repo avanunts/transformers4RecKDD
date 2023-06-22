@@ -65,7 +65,7 @@ class CustomTrainingArguments(T4RecTrainingArguments):
             no_cuda=NO_CUDA,
             evaluation_strategy=EVAL_STRATEGY,
             eval_steps=self.get_argument('eval_steps'),
-            save_total_limit=1,
+            save_total_limit=SAVE_TOTAL_LIMIT,
         )
         if self.get_argument('warmup_steps') is not None:
             self.warmup_steps = self.get_argument('warmup_steps')
