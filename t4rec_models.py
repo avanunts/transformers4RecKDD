@@ -51,7 +51,7 @@ def xl_net_model(args, schema):
     )
 
     # Define a head related to next item prediction task
-    loss = CrossEntropyLoss() if args['loss'] is None or args['loss'] == 'XE' else losses.BPRMaxLoss()
+    loss = CrossEntropyLoss() if 'loss' not in args or args['loss'] == 'XE' else losses.BPRMaxLoss()
     head = tr.Head(
         body,
         tr.NextItemPredictionTask(loss=loss, weight_tying=args['weight_tying'], metrics=metrics),
