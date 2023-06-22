@@ -12,6 +12,7 @@ GRADIENT_ACUM_STEPS = 1
 EVAL_ACUM_STEPS = 10
 NO_CUDA = False
 EVAL_STRATEGY = 'steps'
+SAVE_TOTAL_LIMIT = 1
 
 
 '''
@@ -64,6 +65,7 @@ class CustomTrainingArguments(T4RecTrainingArguments):
             no_cuda=NO_CUDA,
             evaluation_strategy=EVAL_STRATEGY,
             eval_steps=self.get_argument('eval_steps'),
+            save_total_limit=1,
         )
         if self.get_argument('warmup_steps') is not None:
             self.warmup_steps = self.get_argument('warmup_steps')
