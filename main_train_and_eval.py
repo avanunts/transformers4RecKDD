@@ -25,10 +25,13 @@ TRAINING_ARGS_CONSTRUCTORS = {
 }
 
 
-def train_and_eval_xlnet(nvt_paths, model_type, model_args, ta_type, ta_args, resume_from_checkpoint):
+def train_and_eval_xlnet(nvt_paths, model_type, model_args, ta_type, ta_args, resume_from_checkpoint, model=None):
     train = Dataset(nvt_paths['train'], engine='parquet')
     test = Dataset(nvt_paths['test'], engine='parquet')
-    model = init_model(model_type, model_args, train.schema)
+    if model is None:
+        model = init_model(model_type, model_args, train.schema)
+    elif resume_from_checkpoint:
+        raise ValueError('''Can't pass model and resume_from_checkpoint=True''')
     training_args = init_training_args(ta_type, ta_args)
     trainer = t4rec_trainers.CustomTrainer(
         model=model,
