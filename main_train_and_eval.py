@@ -21,7 +21,7 @@ MODEL_CONSTRUCTORS = {
 }
 
 TRAINING_ARGS_CONSTRUCTORS = {
-    'custom_v1': t4rec_trainer_args.CustomTrainingArguments
+    'custom_v1': t4rec_training_args.CustomTrainingArguments
 }
 
 
