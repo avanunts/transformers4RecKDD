@@ -24,8 +24,9 @@ def workflow_v1():
 
 
 def workflow_v2():
-    price_feat = ColumnSelector(['price']) >> (lambda x: x + 1) >> nvt.ops.Clip(min_value=1, max_value=10000) \
-                 >> nvt.ops.LogOp() >> (lambda x: x.astype("int32"))
+    price_feat = ColumnSelector(['price']) >> nvt.ops.LambdaOp(lambda x: x + 1) >> \
+                 nvt.ops.Clip(min_value=1, max_value=10000) >> nvt.ops.LogOp() >> \
+                 nvt.ops.LambdaOp(lambda x: x.astype("int32"))
     cat_feats = ColumnSelector(['item', 'brand']) + price_feat >> nvt.ops.Categorify()
 
     features = ColumnSelector(['session_id', 'time']) + cat_feats
