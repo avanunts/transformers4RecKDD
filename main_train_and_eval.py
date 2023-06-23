@@ -3,7 +3,7 @@ import json
 
 from merlin.io import Dataset
 import t4rec_models
-import t4rec_trainer_args
+import t4rec_training_args
 import t4rec_trainers
 
 '''

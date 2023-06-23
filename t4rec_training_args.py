@@ -33,6 +33,8 @@ defaults = {
     'logging_steps': 1000,
     'eval_steps': 5000,
     'warmup_steps': None,
+    'custom_scheduler_type': None,
+    'custom_scheduler_piecewise_multiplier': {'keys': [], 'values': [1.0]}
 }
 
 
@@ -47,6 +49,8 @@ class CustomTrainingArguments(T4RecTrainingArguments):
     def __init__(self, non_fixed_args):
         self.non_fixed_args = non_fixed_args
         output_dir = os.path.join(self.get_argument('output_dir_prefix'), self.get_argument('model_name'))
+        self.custom_scheduler_type = self.get_argument('custom_scheduler_type')
+        self.lr_piecewise_multiplier = self.get_argument('custom_scheduler_piecewise_multiplier')
         super().__init__(
             data_loader_engine=ENGINE,
             dataloader_drop_last=DROP_LAST,
