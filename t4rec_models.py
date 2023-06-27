@@ -52,11 +52,13 @@ def xl_net_model(args, schema):
             tr.TransformerBlock(transformer_config, masking=inputs.masking)
         )
     else:
-        layer_norm = LayerNorm(normalized_shape=inputs.output_size()[-1])
+        inputs_output_size = inputs.output_size()[-1]
+        layer_norm = LayerNorm(normalized_shape=inputs_output_size)
         body = tr.SequentialBlock(
             inputs,
             layer_norm,
-            tr.MLPBlock([args['xlnet_d_model']]),
+            # call build, because of the bug in t4rec: layer_norm has no attribute "output_size"
+            tr.MLPBlock([args['xlnet_d_model']]).build(inputs_output_size),
             tr.TransformerBlock(transformer_config, masking=inputs.masking)
         )
 
