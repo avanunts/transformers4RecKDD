@@ -1,11 +1,12 @@
 from transformers4rec import torch as tr
 
-from torch.nn import CrossEntropyLoss, LayerNorm
+from torch.nn import CrossEntropyLoss
 
 from transformers4rec.torch.features.sequence import TabularSequenceFeatures
 from transformers4rec.torch.ranking_metric import MeanReciprocalRankAt, RecallAt
 
 import losses
+import t4rec_modules
 
 metrics = [
     MeanReciprocalRankAt(top_ks=[20, 40], labels_onehot=True),
@@ -52,12 +53,10 @@ def xl_net_model(args, schema):
             tr.TransformerBlock(transformer_config, masking=inputs.masking)
         )
     else:
-        layer_norm = LayerNorm(normalized_shape=inputs.output_size()[-1])
         body = tr.SequentialBlock(
             inputs,
-            layer_norm,
-            # call build, because of the bug in t4rec: layer_norm has no attribute "output_size"
-            tr.MLPBlock([args['xlnet_d_model']]).build(inputs.output_size()),
+            t4rec_modules.T4RecLayerNorm(inputs.output_size()),
+            tr.MLPBlock([args['xlnet_d_model']]),
             tr.TransformerBlock(transformer_config, masking=inputs.masking)
         )
 
