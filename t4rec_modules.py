@@ -6,3 +6,6 @@ class T4RecLayerNorm(LayerNorm):
         self.output_size = input_shape
         super().__init__(normalized_shape=input_shape[-1])
 
+    def output_size(self):
+        return self.output_size
+
