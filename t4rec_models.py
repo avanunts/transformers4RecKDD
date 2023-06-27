@@ -1,6 +1,6 @@
 from transformers4rec import torch as tr
 
-from torch.nn import CrossEntropyLoss
+from torch.nn import CrossEntropyLoss, LayerNorm
 
 from transformers4rec.torch.features.sequence import TabularSequenceFeatures
 from transformers4rec.torch.ranking_metric import MeanReciprocalRankAt, RecallAt
@@ -22,6 +22,7 @@ args: (dict)
 - xlnet_n_layer (int)
 - weight_tying (boolean)
 - loss (str): one of 'XE', 'bpr-max', default 'XE'
+- layer_norm (bool): if yes, use layer norm before projection, if key not found set to false
 schema: (merlin.schema.Schema)
 '''
 
@@ -44,11 +45,20 @@ def xl_net_model(args, schema):
     )
 
     # Define the model block including: inputs, masking, projection and transformer block.
-    body = tr.SequentialBlock(
-        inputs,
-        tr.MLPBlock([args['xlnet_d_model']]),
-        tr.TransformerBlock(transformer_config, masking=inputs.masking)
-    )
+    if 'layer_norm' not in args:
+        body = tr.SequentialBlock(
+            inputs,
+            tr.MLPBlock([args['xlnet_d_model']]),
+            tr.TransformerBlock(transformer_config, masking=inputs.masking)
+        )
+    else:
+        layer_norm = LayerNorm(normalized_shape=inputs.output_size()[-1])
+        body = tr.SequentialBlock(
+            inputs,
+            layer_norm,
+            tr.MLPBlock([args['xlnet_d_model']]),
+            tr.TransformerBlock(transformer_config, masking=inputs.masking)
+        )
 
     # Define a head related to next item prediction task
     loss = CrossEntropyLoss() if 'loss' not in args or args['loss'] == 'XE' else losses.BPRMaxLoss()
