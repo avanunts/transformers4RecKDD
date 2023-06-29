@@ -12,34 +12,29 @@ paths_config_path: path to config json, in which kdd_data_folder, t4rec_data_fol
 '''
 
 
-def kdd_sessions_path(locale, env, typ, paths_config_path):
-    config = json.loads(paths_config_path)
-    return os.path.join(config['kdd_data_folder'], locale, env, '{}_sessions.parquet'.format(typ))
+def kdd_sessions_path(kdd_data_folder_path, locale, env, typ):
+    return os.path.join(kdd_data_folder_path, locale, env, '{}_sessions.parquet'.format(typ))
 
 
-def kdd_products_path(locale, paths_config_path):
-    config = json.loads(paths_config_path)
-    return os.path.join(config['kdd_data_folder'], locale, 'products.parquet')
+def kdd_products_path(kdd_data_folder_path, locale):
+    return os.path.join(kdd_data_folder_path, locale, 'products.parquet')
 
 
-def t4rec_cu_ds_path(locale, env, typ, cu_version: int, paths_config_path):
-    config = json.loads(paths_config_path)
+def t4rec_cu_ds_path(t4rec_data_folder_path, locale, env, typ, cu_version: int):
     return os.path.join(
-        config['t4rec_data_folder'], 'cu_datasets', locale, env,  '{}_v{}.parquet'.format(typ, cu_version)
+        t4rec_data_folder_path, 'cu_datasets', locale, env,  '{}_v{}.parquet'.format(typ, cu_version)
     )
 
 
-def t4rec_nvt_ds_path(locale, env, typ, cu_version: int, workflow_version: int, paths_config_path):
-    config = json.loads(paths_config_path)
+def t4rec_nvt_ds_path(t4rec_data_folder_path, locale, env, typ, cu_version: int, workflow_version: int):
     return os.path.join(
-        config['t4rec_data_folder'], 'nvt_datasets', locale, env,
+        t4rec_data_folder_path, 'nvt_datasets', locale, env,
         '{}_cu_v={}_workflow_v={}'.format(typ, cu_version, workflow_version)
     )
 
 
-def nvt_workflow_path(locale, env, workflow_version: int, paths_config_path):
-    config = json.loads(paths_config_path)
+def nvt_workflow_path(t4rec_data_folder_path, locale, env, workflow_version: int):
     return os.path.join(
-        config['t4rec_data_folder'], 'nvt_workflows', locale, env,
+        t4rec_data_folder_path, 'nvt_workflows', locale, env,
         'workflow_v{}'.format(workflow_version)
     )
