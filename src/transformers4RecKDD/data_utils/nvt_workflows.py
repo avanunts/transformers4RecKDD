@@ -99,7 +99,7 @@ def workflow_v4():
 
 
 NVT_WORKFLOWS = {
-    1: workflow_v1,
-    2: workflow_v2,
-    3: workflow_v3,
+    1: workflow_v1(),
+    2: workflow_v2(),
+    3: workflow_v3(),
 }
