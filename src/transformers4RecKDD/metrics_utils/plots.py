@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from src.metrics_utils import log_history_helpers
+from src.transformers4RecKDD.metrics_utils import log_history_helpers
 
 
 def plot_eval_results(trainer, metric_name, **kwargs):
