@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "transformers4RecKDD"
-version = "0.0.2"
+version = "0.0.4"
 authors = [
   { name="Arsenii Vanunts", email="avanunts@yandex.ru" },
 ]
@@ -19,10 +19,3 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/avanunts/transformers4RecKDD"
-
-[tool.setuptools]
-include-package-data = true
-
-
-[tool.setuptools.packages.find]
-where = ["src"]
