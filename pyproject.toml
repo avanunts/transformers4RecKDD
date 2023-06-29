@@ -19,3 +19,6 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/avanunts/transformers4RecKDD"
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
