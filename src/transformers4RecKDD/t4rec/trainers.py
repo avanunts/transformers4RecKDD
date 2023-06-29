@@ -7,7 +7,7 @@ from torch.optim import Optimizer
 from transformers.trainer_utils import SchedulerType
 from transformers.optimization import TYPE_TO_SCHEDULER_FUNCTION
 
-import schedulers
+from . import schedulers
 
 
 class CustomTrainer(Trainer):

@@ -5,8 +5,8 @@ from torch.nn import CrossEntropyLoss
 from transformers4rec.torch.features.sequence import TabularSequenceFeatures
 from transformers4rec.torch.ranking_metric import MeanReciprocalRankAt, RecallAt
 
-import losses
-import modules
+from . import losses
+from . import modules
 
 metrics = [
     MeanReciprocalRankAt(top_ks=[20, 40], labels_onehot=True),
