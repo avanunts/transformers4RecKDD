@@ -38,3 +38,11 @@ def nvt_workflow_path(t4rec_data_folder_path, locale, env, workflow_version: int
         t4rec_data_folder_path, 'nvt_workflows', locale, env,
         'workflow_v{}'.format(workflow_version)
     )
+
+
+def create_folder_for_path_if_not_exists(path):
+    dir_path = os.path.dirname(path)
+    if os.path.exists(path):
+        return
+    os.mkdir(dir_path)
+

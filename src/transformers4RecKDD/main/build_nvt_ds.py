@@ -35,6 +35,7 @@ def build_nvt_ds(config_path):
 
     nvt_train_path = t4rec_nvt_ds_path(t4rec_data_folder_path, locale, env, 'train', cu_version, workflow_version)
     nvt_test_path = t4rec_nvt_ds_path(t4rec_data_folder_path, locale, env, 'test', cu_version, workflow_version)
+    create_folder_for_path_if_not_exists(nvt_train_path)
 
     if os.path.exists(nvt_train_path):
         print('NVT dataset already exists')
@@ -42,6 +43,7 @@ def build_nvt_ds(config_path):
 
     cu_train_path = t4rec_cu_ds_path(t4rec_data_folder_path, locale, env, 'train', cu_version)
     cu_test_path = t4rec_cu_ds_path(t4rec_data_folder_path, locale, env, 'test', cu_version)
+    create_folder_for_path_if_not_exists(cu_train_path)
 
     if not os.path.exists(cu_train_path):
         print('Start building pd datasets')
@@ -80,6 +82,7 @@ def build_nvt_ds(config_path):
 
     workflow.fit_transform(nv_train).to_parquet(nvt_train_path)
     workflow_path = nvt_workflow_path(t4rec_data_folder_path, locale, env, workflow_version)
+    create_folder_for_path_if_not_exists(workflow_path)
     workflow.save(workflow_path)
     workflow.transform(nv_test).to_parquet(nvt_test_path)
     print('Saved nvt datasets and workflow successfully to paths {}, {}, {}'
