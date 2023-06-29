@@ -3,7 +3,7 @@ import json
 
 import pandas as pd
 
-import log_history_helpers
+from metrics_utils import log_history_helpers
 
 RESULTS_KV = {
     'train_num_epochs': log_history_helpers.get_train_num_epochs,

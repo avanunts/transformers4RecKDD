@@ -1,0 +1,5 @@
+{
+  "kdd_data": "drive/MyDrive/data/kdd_datasets",
+  "t4rec_data": "drive/MyDrive/data/transformers4rec",
+  "t4rec_models": "drive/MyDrive/models/transformers4rec"
+}

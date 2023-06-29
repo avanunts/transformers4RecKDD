@@ -2,9 +2,7 @@ import os
 import json
 
 from merlin.io import Dataset
-import t4rec_models
-import t4rec_training_args
-import t4rec_trainers
+from t4rec import t4rec_training_args, models, trainers
 
 '''
 args:
