@@ -2,7 +2,7 @@ import os
 import json
 
 from merlin.io import Dataset
-from src.transformers4RecKDD.t4rec import t4rec_training_args
+from ..t4rec import training_args, models, trainers
 
 '''
 args:
@@ -15,11 +15,11 @@ returns trainer object, in which model, train, test and eval results might be fo
 '''
 
 MODEL_CONSTRUCTORS = {
-    'xlnet': t4rec_models.xl_net_model,
+    'xlnet': models.xl_net_model,
 }
 
 TRAINING_ARGS_CONSTRUCTORS = {
-    'custom_v1': t4rec_training_args.CustomTrainingArguments
+    'custom_v1': training_args.CustomTrainingArguments
 }
 
 
@@ -31,7 +31,7 @@ def train_and_eval_xlnet(nvt_paths, model_type, model_args, ta_type, ta_args, re
     elif resume_from_checkpoint:
         raise ValueError('''Can't pass model and resume_from_checkpoint=True''')
     training_args = init_training_args(ta_type, ta_args)
-    trainer = t4rec_trainers.CustomTrainer(
+    trainer = trainers.CustomTrainer(
         model=model,
         args=training_args,
         schema=train.schema,

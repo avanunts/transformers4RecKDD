@@ -6,6 +6,7 @@ from transformers4rec.torch.features.sequence import TabularSequenceFeatures
 from transformers4rec.torch.ranking_metric import MeanReciprocalRankAt, RecallAt
 
 import losses
+import modules
 
 metrics = [
     MeanReciprocalRankAt(top_ks=[20, 40], labels_onehot=True),
@@ -54,7 +55,7 @@ def xl_net_model(args, schema):
     else:
         body = tr.SequentialBlock(
             inputs,
-            t4rec_modules.T4RecLayerNorm(inputs.output_size()),
+            modules.T4RecLayerNorm(inputs.output_size()),
             tr.MLPBlock([args['xlnet_d_model']]),
             tr.TransformerBlock(transformer_config, masking=inputs.masking)
         )
