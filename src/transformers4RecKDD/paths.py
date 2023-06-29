@@ -44,5 +44,5 @@ def create_folder_for_path_if_not_exists(path):
     dir_path = os.path.dirname(path)
     if os.path.exists(path):
         return
-    os.mkdir(dir_path)
+    os.makedirs(dir_path, exist_ok=True)
 
