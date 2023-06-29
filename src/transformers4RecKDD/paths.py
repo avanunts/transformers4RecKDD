@@ -2,38 +2,44 @@ import os
 import json
 
 '''
-typ: dev_train, dev_test, submit_train, submit_predict
 locale: DE, JP, UP, IT, ES, FR
+env: dev/submit
+typ: train/test
+cu_version: 1, 2, 3, ... - version of cu_ds for nvt_dataset
+workflow_version: 1, 2, 3, ... - version of nvt workflow
+ 
 paths_config_path: path to config json, in which kdd_data_folder, t4rec_data_folder, t4rec_models_folder paths are specified
-version: int 
 '''
 
 
-def kdd_sessions_path(locale, typ, paths_config_path):
+def kdd_sessions_path(locale, env, typ, paths_config_path):
     config = json.loads(paths_config_path)
-    return os.path.join(config['kdd_data_folder'], '{}_sessions_{}.parquet'.format(locale, typ))
+    return os.path.join(config['kdd_data_folder'], locale, env, '{}_sessions.parquet'.format(typ))
 
 
 def kdd_products_path(locale, paths_config_path):
     config = json.loads(paths_config_path)
-    return os.path.join(config['kdd_data_folder'], '{}_products.parquet'.format(locale))
+    return os.path.join(config['kdd_data_folder'], locale, 'products.parquet')
 
 
-def t4rec_cu_ds_path(locale, typ, version: int, paths_config_path):
+def t4rec_cu_ds_path(locale, env, typ, cu_version: int, paths_config_path):
     config = json.loads(paths_config_path)
-    return os.path.join(config['t4rec_data_folder'], '{}_{}_v{}_processed.parquet'.format(locale, typ, version))
+    return os.path.join(
+        config['t4rec_data_folder'], 'cu_datasets', locale, env,  '{}_v{}.parquet'.format(typ, cu_version)
+    )
 
 
-def t4rec_nvt_ds_path(locale, typ, version: int, paths_config_path):
+def t4rec_nvt_ds_path(locale, env, typ, cu_version: int, workflow_version: int, paths_config_path):
     config = json.loads(paths_config_path)
-    return os.path.join(config['t4rec_data_folder'], '{}_{}_v{}_processed_nvt'.format(locale, typ, version))
+    return os.path.join(
+        config['t4rec_data_folder'], 'nvt_datasets', locale, env,
+        '{}_cu_v={}_workflow_v={}'.format(typ, cu_version, workflow_version)
+    )
 
 
-def t4rec_model_path(locale, typ, version, paths_config_path):
+def nvt_workflow_path(locale, env, workflow_version: int, paths_config_path):
     config = json.loads(paths_config_path)
-    return os.path.join(config['t4rec_models_folder'], '{}_{}_v{}'.format(locale, typ, version))
-
-
-def nvt_workflow_path(locale, version: int, paths_config_path):
-    config = json.loads(paths_config_path)
-    return os.path.join(config['t4rec_data_folder'], "{}_v{}_workflow_etl".format(locale, version))
+    return os.path.join(
+        config['t4rec_data_folder'], 'nvt_workflows', locale, env,
+        'workflow_v{}'.format(workflow_version)
+    )

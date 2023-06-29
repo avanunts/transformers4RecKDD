@@ -96,3 +96,10 @@ def workflow_v4():
     groupby_features_truncated = groupby_features_list >> nvt.ops.ListSlice(-SESSIONS_MAX_LENGTH)
 
     return nvt.Workflow(groupby_features_truncated)
+
+
+NVT_WORKFLOWS = {
+    1: workflow_v1,
+    2: workflow_v2,
+    3: workflow_v3,
+}
