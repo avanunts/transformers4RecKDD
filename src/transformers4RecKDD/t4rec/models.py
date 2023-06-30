@@ -28,43 +28,48 @@ schema: (merlin.schema.Schema)
 '''
 
 
-def xl_net_model(args, schema):
+def xlnet_model(config, schema):
     inputs = TabularSequenceFeatures.from_schema(
         schema,
         aggregation='concat',
-        max_sequence_length=args['seq_length'],
-        embedding_dims=args['embedding_dims'],
-        masking=args['masking'],
+        max_sequence_length=config.seq_length,
+        embedding_dims=config.embedding_dims,
+        masking=config.masking,
     )
 
     # Define XLNetConfig class and set default parameters for HF XLNet config
     transformer_config = tr.XLNetConfig.build(
-        d_model=args['xlnet_d_model'],
-        n_head=args['xlnet_n_head'],
-        n_layer=args['xlnet_n_layer'],
-        total_seq_length=args['seq_length']
+        d_model=config.xlnet_d_model,
+        n_head=config.xlnet_n_head,
+        n_layer=config.xlnet_n_layer,
+        total_seq_length=config.seq_length
     )
 
     # Define the model block including: inputs, masking, projection and transformer block.
-    if 'layer_norm' not in args:
+    if not config.embeddings_layer_norm:
         body = tr.SequentialBlock(
             inputs,
-            tr.MLPBlock([args['xlnet_d_model']]),
+            tr.MLPBlock([config.xlnet_d_model]),
             tr.TransformerBlock(transformer_config, masking=inputs.masking)
         )
     else:
         body = tr.SequentialBlock(
             inputs,
             modules.T4RecLayerNorm(inputs.output_size()),
-            tr.MLPBlock([args['xlnet_d_model']]),
+            tr.MLPBlock([config.xlnet_d_model]),
             tr.TransformerBlock(transformer_config, masking=inputs.masking)
         )
 
     # Define a head related to next item prediction task
-    loss = CrossEntropyLoss() if 'loss' not in args or args['loss'] == 'XE' else losses.BPRMaxLoss()
+    if config.loss == 'XE':
+        loss = CrossEntropyLoss()
+    elif config.loss == 'bpr-max':
+        loss = losses.BPRMaxLoss()
+    else:
+        raise ValueError('Loss {} is not implemented'.format(config.loss))
     head = tr.Head(
         body,
-        tr.NextItemPredictionTask(loss=loss, weight_tying=args['weight_tying'], metrics=metrics),
+        tr.NextItemPredictionTask(loss=loss, weight_tying=config.weight_tying, metrics=metrics),
         inputs=inputs,
     )
 

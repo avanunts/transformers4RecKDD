@@ -33,6 +33,12 @@ def t4rec_nvt_ds_path(t4rec_data_folder_path, locale, env, typ, cu_version: int,
     )
 
 
+def t4rec_model_path(t4rec_models_folder_path, locale, env, model_name):
+    return os.path.join(
+        t4rec_models_folder_path, locale, env, model_name
+    )
+
+
 def nvt_workflow_path(t4rec_data_folder_path, locale, env, workflow_version: int):
     return os.path.join(
         t4rec_data_folder_path, 'nvt_workflows', locale, env,
