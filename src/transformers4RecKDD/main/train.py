@@ -29,7 +29,7 @@ def train(config_path):
 
     training_args = CustomTrainingArguments(
         output_dir=model_output_dir_path,
-        **config['training_arg']
+        **config['training_args']
     )
 
     trainer = trainers.CustomTrainer(
