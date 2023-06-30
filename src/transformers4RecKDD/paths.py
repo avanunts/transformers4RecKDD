@@ -29,7 +29,7 @@ def t4rec_cu_ds_path(t4rec_data_folder_path, locale, env, typ, cu_version: int):
 def t4rec_nvt_ds_path(t4rec_data_folder_path, locale, env, typ, cu_version: int, workflow_version: int):
     return os.path.join(
         t4rec_data_folder_path, 'nvt_datasets', locale, env,
-        '{}_cu_v={}_workflow_v={}'.format(typ, cu_version, workflow_version)
+        '{}_cu_v{}_workflow_v{}'.format(typ, cu_version, workflow_version)
     )
 
 
