@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import traceback
 
 from merlin.io import Dataset
 from ..t4rec.training_args import CustomTrainingArguments
@@ -23,9 +24,10 @@ def train_many(*config_paths):
         t1 = time.time()
         try:
             train_one(config_path)
-        except Exception as err:
-            print('Exception for config at {} has occurred. Continue without saving time. '
-                  'Exception: {}'.format(config_path, err))
+        except Exception:
+            print('Exception for config at {} has occurred. Continue without saving time'.format(config_path))
+            print(traceback.format_exc())
+
             continue
         t2 = time.time()
         print('Total training time for config at {} is {:.2f}s'.format(config_path, t2 - t1))
