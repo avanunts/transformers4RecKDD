@@ -30,28 +30,28 @@ def build_nvt_ds(config_path):
     env = config['env']
     cu_version = config['cu_version']
     workflow_version = config['workflow_version']
-    t4rec_folder_path = config['t4rec_folder_path']
+    kdd_folder_path = config['kdd_folder_path']
 
-    nvt_train_path = t4rec_nvt_ds_path(t4rec_folder_path, locale, env, 'train', cu_version, workflow_version)
-    nvt_test_path = t4rec_nvt_ds_path(t4rec_folder_path, locale, env, 'test', cu_version, workflow_version)
+    nvt_train_path = t4rec_nvt_ds_path(kdd_folder_path, locale, env, 'train', cu_version, workflow_version)
+    nvt_test_path = t4rec_nvt_ds_path(kdd_folder_path, locale, env, 'test', cu_version, workflow_version)
     create_folder_for_path_if_not_exists(nvt_train_path)
 
     if os.path.exists(nvt_train_path):
         print('NVT dataset already exists')
         return
 
-    cu_train_path = t4rec_cu_ds_path(t4rec_folder_path, locale, env, 'train', cu_version)
-    cu_test_path = t4rec_cu_ds_path(t4rec_folder_path, locale, env, 'test', cu_version)
+    cu_train_path = t4rec_cu_ds_path(kdd_folder_path, locale, env, 'train', cu_version)
+    cu_test_path = t4rec_cu_ds_path(kdd_folder_path, locale, env, 'test', cu_version)
     create_folder_for_path_if_not_exists(cu_train_path)
 
     if not os.path.exists(cu_train_path):
         print('Start building pd datasets')
 
-        kdd_train_sessions_path = kdd_sessions_path(t4rec_folder_path, locale, env, 'train')
+        kdd_train_sessions_path = kdd_sessions_path(kdd_folder_path, locale, env, 'train')
         kdd_train_sessions = pd.read_parquet(kdd_train_sessions_path, engine='pyarrow')
-        kdd_test_sessions_path = kdd_sessions_path(t4rec_folder_path, locale, env, 'holdout')
+        kdd_test_sessions_path = kdd_sessions_path(kdd_folder_path, locale, env, 'holdout')
         kdd_test_sessions = pd.read_parquet(kdd_test_sessions_path, engine='pyarrow')
-        product_attributes = pd.read_parquet(kdd_products_path(t4rec_folder_path, locale))
+        product_attributes = pd.read_parquet(kdd_products_path(kdd_folder_path, locale))
 
         pd_train, pd_test = kdd_datasets_processing.process_kdd_datasets(
             kdd_train_sessions,
@@ -80,7 +80,7 @@ def build_nvt_ds(config_path):
     workflow = NVT_WORKFLOWS[workflow_version]
 
     workflow.fit_transform(nv_train).to_parquet(nvt_train_path)
-    workflow_path = nvt_workflow_path(t4rec_folder_path, locale, env, workflow_version)
+    workflow_path = nvt_workflow_path(kdd_folder_path, locale, env, workflow_version)
     create_folder_for_path_if_not_exists(workflow_path)
     workflow.save(workflow_path)
     workflow.transform(nv_test).to_parquet(nvt_test_path)

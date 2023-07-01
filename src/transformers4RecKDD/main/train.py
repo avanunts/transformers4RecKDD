@@ -77,15 +77,15 @@ def checkpoint_exists(dir_path):
 
 
 def get_paths_from_config(config):
-    t4rec_folder_path = config['t4rec_folder_path']
+    kdd_folder_path = config['kdd_folder_path']
     locale = config['locale']
     env = config['env']
     cu_version = config['cu_version']
     workflow_version = config['workflow_version']
-    train_path = t4rec_nvt_ds_path(t4rec_folder_path, locale, env, 'train', cu_version, workflow_version)
-    test_path = t4rec_nvt_ds_path(t4rec_folder_path, locale, env, 'test', cu_version, workflow_version)
+    train_path = t4rec_nvt_ds_path(kdd_folder_path, locale, env, 'train', cu_version, workflow_version)
+    test_path = t4rec_nvt_ds_path(kdd_folder_path, locale, env, 'test', cu_version, workflow_version)
 
-    model_output_dir_path = t4rec_model_path(t4rec_folder_path, locale, env, config['model_name'])
+    model_output_dir_path = t4rec_model_path(kdd_folder_path, locale, env, config['model_name'])
     create_folder_for_path_if_not_exists(os.path.dirname(model_output_dir_path))
     return train_path, test_path, model_output_dir_path
 
