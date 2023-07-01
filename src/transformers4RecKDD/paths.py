@@ -22,13 +22,13 @@ def kdd_products_path(t4rec_folder_path, locale):
 
 def t4rec_cu_ds_path(t4rec_folder_path, locale, env, typ, cu_version: int):
     return os.path.join(
-        t4rec_folder_path, 'data', 'cu_datasets', locale, env,  '{}_v{}.parquet'.format(typ, cu_version)
+        t4rec_folder_path, 'data', 'transformers4rec', 'cu_datasets', locale, env,  '{}_v{}.parquet'.format(typ, cu_version)
     )
 
 
 def t4rec_nvt_ds_path(t4rec_folder_path, locale, env, typ, cu_version: int, workflow_version: int):
     return os.path.join(
-        t4rec_folder_path, 'data', 'nvt_datasets', locale, env,
+        t4rec_folder_path, 'data', 'transformers4rec', 'nvt_datasets', locale, env,
         '{}_cu_v{}_workflow_v{}'.format(typ, cu_version, workflow_version)
     )
 
