@@ -126,6 +126,9 @@ def check_config_path_to_model_name_bijection(config_path):
     with open(config_path, 'r') as open_file:
         config = json.load(open_file)
     _, _, model_output_dir_path = get_paths_from_config(config)
+    if not os.path.exists(model_output_dir_path):
+        print('There is no model at path {}. Check succeeded.'.format(model_output_dir_path))
+        return True
     add_info_path = os.path.join(model_output_dir_path, 'add_info.json')
     if not os.path.exists(add_info_path):
         print('Model output dir at path {} exists, '
