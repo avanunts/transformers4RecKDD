@@ -21,6 +21,7 @@ def train_many(*config_paths):
     for config_path in config_paths:
         if not check_config_path_to_model_name_bijection(config_path):
             print('Skipping this train, because check is not successful')
+            continue
         t1 = time.time()
         try:
             train_one(config_path)

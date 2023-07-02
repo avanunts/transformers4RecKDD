@@ -19,3 +19,4 @@ class CustomTrainingArguments(T4RecTrainingArguments):
     eval_steps: int = 5000
     save_total_limit: int = 1
     max_sequence_length: int = 20
+    predict_top_k: int = 100
