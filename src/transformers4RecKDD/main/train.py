@@ -4,6 +4,7 @@ import time
 import traceback
 
 from merlin.io import Dataset
+import torch
 from ..t4rec.training_args import CustomTrainingArguments
 from ..t4rec import models, trainers, model_configs
 from ..paths import t4rec_nvt_ds_path, t4rec_model_path, create_folder_for_path_if_not_exists
@@ -28,8 +29,8 @@ def train_many(*config_paths):
         except Exception:
             print('Exception for config at {} has occurred. Continue without saving time'.format(config_path))
             print(traceback.format_exc())
-
             continue
+        torch.cuda.empty_cache()
         t2 = time.time()
         print('Total training time for config at {} is {:.2f}s'.format(config_path, t2 - t1))
         save_additional_info(config_path, t1, t2)
