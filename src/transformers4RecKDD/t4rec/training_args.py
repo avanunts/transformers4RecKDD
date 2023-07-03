@@ -20,3 +20,4 @@ class CustomTrainingArguments(T4RecTrainingArguments):
     save_total_limit: int = 1
     max_sequence_length: int = 20
     predict_top_k: int = 100
+    max_num_checkpoints_in_trash: int = None

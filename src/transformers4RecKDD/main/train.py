@@ -6,7 +6,7 @@ import traceback
 from merlin.io import Dataset
 import torch
 from ..t4rec.training_args import CustomTrainingArguments
-from ..t4rec import models, trainers, model_configs
+from ..t4rec import models, trainers, model_configs, callbacks
 from ..paths import t4rec_nvt_ds_path, t4rec_model_path, create_folder_for_path_if_not_exists
 
 MODEL_CONSTRUCTORS = {
@@ -18,14 +18,14 @@ MODEL_CONFIGS = {
 }
 
 
-def train_many(*config_paths):
+def train_many(*config_paths, drive=None):
     for config_path in config_paths:
         if not check_config_path_to_model_name_bijection(config_path):
             print('Skipping this train, because check is not successful')
             continue
         t1 = time.time()
         try:
-            train_one(config_path)
+            train_one(config_path, drive)
         except Exception:
             print('Exception for config at {} has occurred. Continue without saving time'.format(config_path))
             print(traceback.format_exc())
@@ -37,7 +37,7 @@ def train_many(*config_paths):
 
 
 # do not use this method directly; if you want to train one model use train_many with a length one list arg
-def train_one(config_path):
+def train_one(config_path, drive=None):
     with open(config_path, 'r') as open_file:
         config = json.load(open_file)
 
@@ -54,11 +54,19 @@ def train_one(config_path):
         **config['training_args']
     )
 
+    _callbacks = None
+    if training_args.max_num_checkpoints_in_trash is not None:
+        if drive is None:
+            raise ValueError('max_num_checkpoints_in_trash in training args is {} (not None), but drive argument'
+                             'is None'.format(training_args.max_num_checkpoints_in_trash))
+        _callbacks = [callbacks.CleanDriveTrashCheckpointsCallback(drive)]
+
     trainer = trainers.CustomTrainer(
         model=model,
         args=training_args,
         schema=train_ds.schema,
         compute_metrics=True,
+        callbacks=_callbacks,
     )
     trainer.train_dataset_or_path = train_ds
     trainer.eval_dataset_or_path = test_ds
