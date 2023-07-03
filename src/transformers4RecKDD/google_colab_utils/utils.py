@@ -25,7 +25,7 @@ def clean_trash_checkpoints(drive):
 
 def safe_list_files(drive, folder_id):
     try:
-        drive.ListFile({'q': '\'{}\' in parents and trashed=true'.format(folder_id)}).GetList()
+        return drive.ListFile({'q': '\'{}\' in parents and trashed=true'.format(folder_id)}).GetList()
     except Exception:
         print('Couldn\'t list files at folder_id {}. Probably the folder was already deleted.'.format(folder_id))
         return []
