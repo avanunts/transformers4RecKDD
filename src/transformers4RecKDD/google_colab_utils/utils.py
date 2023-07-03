@@ -15,12 +15,20 @@ def clean_trash_checkpoints(drive):
     checkpoint_folders = list(filter(lambda x: 'checkpoint' in x['title'], drive.ListFile({'q': "trashed = true"}).GetList()))
     for checkpoint_folder in checkpoint_folders:
         checkpoint_folder_id = checkpoint_folder['id']
-        file_list = drive.ListFile({'q': '\'{}\' in parents and trashed=true'.format(checkpoint_folder_id)}).GetList()
+        file_list = safe_list_files(drive, checkpoint_folder_id)
         for a_file in file_list:
             print('the file {}, is about to get deleted permanently.'.format(a_file['title']))
             safe_delete(a_file)
         print('the file {}, is about to get deleted permanently.'.format(checkpoint_folder['title']))
         safe_delete(checkpoint_folder)
+
+
+def safe_list_files(drive, folder_id):
+    try:
+        drive.ListFile({'q': '\'{}\' in parents and trashed=true'.format(folder_id)}).GetList()
+    except Exception:
+        print('Couldn\'t list files at folder_id {}. Probably the folder was already deleted.'.format(folder_id))
+        return []
 
 
 def safe_delete(file):
