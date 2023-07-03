@@ -8,6 +8,7 @@ import torch
 from ..t4rec.training_args import CustomTrainingArguments
 from ..t4rec import models, trainers, model_configs, callbacks
 from ..paths import t4rec_nvt_ds_path, t4rec_model_path, create_folder_for_path_if_not_exists
+from ..metrics_utils.log_history_helpers import get_train_entries, get_train_num_epochs
 
 MODEL_CONSTRUCTORS = {
     'xlnet': models.xlnet_model,
@@ -20,20 +21,22 @@ MODEL_CONFIGS = {
 
 def train_many(*config_paths, drive=None):
     for config_path in config_paths:
-        if not check_config_path_to_model_name_bijection(config_path):
-            print('Skipping this train, because check is not successful')
-            continue
-        t1 = time.time()
         try:
+            if not check_config_path_to_model_name_bijection(config_path):
+                print('Skipping this train, because check is not successful')
+                continue
+            num_train_epochs_at_start = get_num_train_epochs_at_last_checkpoint(config_path)
+            t1 = time.time()
             train_one(config_path, drive)
+            t2 = time.time()
+            torch.cuda.empty_cache()
+            num_train_epochs_at_end = get_num_train_epochs_from_config(config_path)
+            print('Total training time for config at {} is {:.2f}s'.format(config_path, t2 - t1))
+            save_additional_info(config_path, t1, t2, num_train_epochs_at_start, num_train_epochs_at_end)
         except Exception:
             print('Exception for config at {} has occurred. Continue without saving time'.format(config_path))
             print(traceback.format_exc())
             continue
-        torch.cuda.empty_cache()
-        t2 = time.time()
-        print('Total training time for config at {} is {:.2f}s'.format(config_path, t2 - t1))
-        save_additional_info(config_path, t1, t2)
 
 
 # do not use this method directly; if you want to train one model use train_many with a length one list arg
@@ -86,6 +89,14 @@ def checkpoint_exists(dir_path):
     return len(checkpoint_folders) > 0
 
 
+def get_checkpoint_num_steps(checkpoint_name):
+    return int(checkpoint_name.split('-')[1])
+
+
+def get_last_checkpoint_name(model_dir_path):
+    return sorted(list(filter(lambda x: 'checkpoint' in x, os.listdir(model_dir_path))), key=get_checkpoint_num_steps)[-1]
+
+
 def get_paths_from_config(config):
     kdd_folder_path = config['kdd_folder_path']
     locale = config['locale']
@@ -112,20 +123,21 @@ def init_model(model_type, model_config, schema):
     return MODEL_CONSTRUCTORS[model_type](model_config, schema)
 
 
-def save_additional_info(config_path, t1, t2):
+def save_additional_info(config_path, t1, t2, num_train_epochs_at_start, num_train_epochs_at_end):
     with open(config_path, 'r') as open_file:
         config = json.load(open_file)
     _, _, model_output_dir_path = get_paths_from_config(config)
     add_info_path = os.path.join(model_output_dir_path, 'add_info.json')
     if os.path.exists(add_info_path):
         return
+    num_epochs = num_train_epochs_at_end - num_train_epochs_at_start
     add_info = {
         'config_path': config_path,
-        'first_iter_num_epochs': config['training_args']['num_train_epochs'],
+        'num_epochs': num_epochs,
         'time_start': t1,
         'time_end': t2,
         'total_time_seconds': t2 - t1,
-        'time_per_epoch': (t2 - t1) / config['training_args']['num_train_epochs']
+        'time_per_epoch': (t2 - t1) / num_epochs
     }
 
     json_object = json.dumps(add_info, indent=4)
@@ -138,14 +150,12 @@ def check_config_path_to_model_name_bijection(config_path):
     with open(config_path, 'r') as open_file:
         config = json.load(open_file)
     _, _, model_output_dir_path = get_paths_from_config(config)
-    if not os.path.exists(model_output_dir_path):
-        print('There is no model at path {}. Check succeeded.'.format(model_output_dir_path))
-        return True
     add_info_path = os.path.join(model_output_dir_path, 'add_info.json')
     if not os.path.exists(add_info_path):
-        print('Model output dir at path {} exists, '
-              'but add_info at path {} doesn\'t, check failed.'.format(model_output_dir_path, add_info_path))
-        return False
+        print('add_info.json at path {} doesn\'t. Will recover from the last '
+              'checkpoint (if exists) and proceed or start training from scratch '
+              '(if no checkpoint was found)'.format(add_info_path))
+        return True
     with open(add_info_path, 'r') as open_file:
         add_info = json.load(open_file)
     if add_info['config_path'] != config_path:
@@ -157,3 +167,21 @@ def check_config_path_to_model_name_bijection(config_path):
     return True
 
 
+def get_num_train_epochs_at_last_checkpoint(config_path):
+    with open(config_path, 'r') as open_file:
+        config = json.load(open_file)
+    _, _, model_output_dir_path = get_paths_from_config(config)
+    if not checkpoint_exists(model_output_dir_path):
+        return 0
+    last_checkpoint_path = os.path.join(model_output_dir_path, get_last_checkpoint_name(model_output_dir_path))
+    last_state_path = os.path.join(last_checkpoint_path, 'trainer_state.json')
+    with open(last_state_path, 'r') as open_file:
+        last_state = json.load(open_file)
+    train_log_entries = get_train_entries(last_state['log_history'])
+    return get_train_num_epochs(train_log_entries)
+
+
+def get_num_train_epochs_from_config(config_path):
+    with open(config_path, 'r') as open_file:
+        config = json.load(open_file)
+    return config['training_args']['num_train_epochs']
