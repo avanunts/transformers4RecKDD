@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
-import log_history_helpers
+
+from . import log_history_helpers
 
 
 def plot_eval_results(trainer, metric_name, **kwargs):

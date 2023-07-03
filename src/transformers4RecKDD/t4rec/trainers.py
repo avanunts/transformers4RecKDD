@@ -7,7 +7,7 @@ from torch.optim import Optimizer
 from transformers.trainer_utils import SchedulerType
 from transformers.optimization import TYPE_TO_SCHEDULER_FUNCTION
 
-import t4rec_schedulers
+from . import schedulers
 
 
 class CustomTrainer(Trainer):
@@ -19,7 +19,7 @@ class CustomTrainer(Trainer):
 
     def create_custom_scheduler(self, num_training_steps: int, optimizer: torch.optim.Optimizer = None):
         if self.lr_scheduler is None:
-            self.lr_scheduler = t4rec_schedulers.get_custom_scheduler(
+            self.lr_scheduler = schedulers.get_custom_scheduler(
                 self.args.custom_scheduler_type,
                 optimizer=self.optimizer if optimizer is None else optimizer,
                 num_warmup_steps=self.args.warmup_steps,

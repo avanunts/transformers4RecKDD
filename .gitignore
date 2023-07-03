@@ -1,3 +1,5 @@
 .gitignore
 .idea/
 *.ipynb
+dist/
+*.egg-info/
